@@ -5,6 +5,7 @@ const cors = require('cors')
 const path = require('path')
 
 const middleware = require('./utils/middleware')
+const roomRouter = require('./controllers/room')
 
 // Intitialize express app
 const app = express()
@@ -19,6 +20,8 @@ app.use(middleware.requestLogger)
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, '/build/index.html'))
 })
+
+app.use('/', roomRouter)
 
 // Deploy error handling middleware
 app.use(middleware.unknownEndpoint)

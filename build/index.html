@@ -9,14 +9,68 @@
         <title>E-Card</title>
 
         <script src="/socket.io/socket.io.js"></script>
+        <script></script>
+
+        <style>
+            div {
+                position: relative;
+                margin: 0.5em;
+                padding: 0.5em;
+                background: lightyellow;
+                height: 50vh;
+                border: 1px solid black;
+            }
+            div > form {
+                position: absolute;
+                bottom: 0;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Welcome</h1>
+        <form id="hmm">
+            <label for="roomid">Enter room id : </label>
+            <input type="text" id="roomid" name="roomid" />
+            <button id="joinroom" type="submit">Join the room</button>
+        </form>
+        <div>
+            <ul id="chats"></ul>
+            <form id="chatform">
+                <input type="text" name="chat" id="chat" />
+                <button id="submitchat" type="submit">Send</button>
+            </form>
+        </div>
+
         <script>
+            const chats = document.querySelector('#chats')
+            const chatform = document.querySelector('#chatform')
+            const chat = document.querySelector('#chat')
+            const roomid = document.querySelector('#roomid')
+            const form = document.querySelector('#hmm')
+
             var socket = io.connect()
             socket.on('msg', function(data) {
                 console.log(data)
             })
+
+            socket.on('addChatMessage', data => {
+                chats.append(`<li>${data}</li>`)
+            })
+
+            const joinRoom = e => {
+                e.preventDefault()
+                console.log(roomid)
+                const id = roomid.value
+                socket.emit('join room', id)
+            }
+            form.addEventListener('submit', joinRoom)
+
+            const onSend = e => {
+                e.preventDefault()
+                chats.append(`<li>${chat.value}</li>`)
+                socket.emit('chatmsg', chat.value)
+            }
+            chatform.addEventListener('submit', onSend)
         </script>
-    </head>
-    <body>
-        <h1>Welcome</h1>
     </body>
 </html>
