@@ -5,7 +5,8 @@ const cors = require('cors')
 const path = require('path')
 
 const middleware = require('./utils/middleware')
-const roomRouter = require('./controllers/room')
+// const roomRouter = require('./controllers/room')
+const registerRouter = require('./controllers/register')
 
 // Intitialize express app
 const app = express()
@@ -17,11 +18,12 @@ app.use(bodyParser.json())
 app.use(middleware.requestLogger)
 
 // Listen to routes here
-app.get('/', (req, res) => {
+app.use('/', registerRouter)
+
+// If no particular route matches
+app.get('/*', (req, res) => {
     res.sendFile(path.join(__dirname, '/build/index.html'))
 })
-
-app.use('/', roomRouter)
 
 // Deploy error handling middleware
 app.use(middleware.unknownEndpoint)
