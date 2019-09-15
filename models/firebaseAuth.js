@@ -16,17 +16,12 @@ admin.initializeApp({
 
 // Register a new user
 const registerUser = async (email, username, password) => {
-    try {
-        const user = await admin.auth().createUser({
-            email,
-            displayName: username,
-            password // firebase hashes passwords cloud-side
-        })
-        return user
-    } catch (error) {
-        logger.error('**** Error in firebaseAuth **** : ', error)
-        throw error
-    }
+    const user = await admin.auth().createUser({
+        email,
+        displayName: username,
+        password // firebase hashes passwords cloud-side
+    })
+    return user
 }
 
 // Get user's details using uid
@@ -35,7 +30,7 @@ const getUserData = async uid => {
         const user = await admin.auth().getUser(uid)
         return user.toJSON()
     } catch (error) {
-        logger.error('**** Error in firebaseAuth **** : ', error)
+        logger.error('\nError While retrieving User info : \n', error)
         throw error
     }
 }

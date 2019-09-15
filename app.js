@@ -5,7 +5,6 @@ const cors = require('cors')
 const path = require('path')
 
 const middleware = require('./utils/middleware')
-// const roomRouter = require('./controllers/room')
 const registerRouter = require('./controllers/register')
 
 // Intitialize express app
@@ -27,5 +26,6 @@ app.get('/*', (req, res) => {
 
 // Deploy error handling middleware
 app.use(middleware.unknownEndpoint)
+app.use(middleware.errorHandler)
 
 module.exports = app

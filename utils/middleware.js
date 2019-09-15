@@ -14,7 +14,28 @@ const unknownEndpoint = (req, res) => {
     res.status(404).send({ error: 'Not Found, Unknown endpoint' })
 }
 
+// Handles specific errors
+const errorHandler = (error, req, res, next) => {
+    logger.error(error)
+
+    if (error.code === 'auth/invalid-password') {
+        res.status(400).send({
+            code: error.code,
+            message: error.message
+        })
+    }
+    if (error.code === 'auth/email-already-exists') {
+        res.status(400).send({
+            code: error.code,
+            message: error.message
+        })
+    }
+
+    next(error)
+}
+
 module.exports = {
     requestLogger,
-    unknownEndpoint
+    unknownEndpoint,
+    errorHandler
 }
