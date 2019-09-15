@@ -1,39 +1,42 @@
 const firebaseAuth = require('./firebaseAuth')
 const logger = require('../utils/logger')
 
-const userInfo = []
+// Handles the currently connected users
+// Only connected after login
+const connectedUsers = []
 
+// Register a new user using firebase
 const registerUser = async (email, username, password) => {
     try {
         const user = await firebaseAuth.registerUser(email, username, password)
         return user
     } catch (error) {
         logger.error(error)
-        return null
+        return error
     }
 }
 
-const loginUser = async (id, email) => {
+// Add logged in user's info to connectUsers
+// Log-in is handled client-side using firebase
+const addLoggedInUser = async (socketid, uid) => {
     try {
-        const user = await firebaseAuth.login(email)
-        if (user.uid !== null) {
-            userInfo.push({ ...user, id })
-            return true
-        }
-        return false
+        const user = await firebaseAuth.getUserData(uid)
+        user.socketid = socketid
+        connectedUsers.push(user)
+        return user
     } catch (error) {
-        logger.error(`Can't authenticate user`)
-        return false
+        logger.error(error)
+        throw error
     }
 }
 
-const getUserInfo = id => {
-    return userInfo.find(user => user.id === id)
+// Retrieve this socket's information and send back
+const getUserInfo = socketid => {
+    return connectedUsers.find(user => user.socketid === socketid)
 }
 
 module.exports = {
-    // setId,
     registerUser,
-    loginUser,
+    addLoggedInUser,
     getUserInfo
 }

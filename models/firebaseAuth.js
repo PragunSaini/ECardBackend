@@ -9,6 +9,10 @@ admin.initializeApp({
     databaseURL: 'https://e-card-9955f.firebaseio.com'
 })
 
+// THIS MODULE CONTAINS FUNTIONS TO QUERY THE FIREBASE DATABASE
+// THEY DO NOT CHANGE THE STATE OF THE SERVER IN ANY WAY
+
+// Register a new user
 const registerUser = async (email, username, password) => {
     try {
         const user = await admin.auth().createUser({
@@ -18,22 +22,23 @@ const registerUser = async (email, username, password) => {
         })
         return user
     } catch (error) {
-        console.log(error)
-        return error
+        console.error(error)
+        throw error
     }
 }
 
-const login = async email => {
-    const userRecord = await admin.auth().getUserByEmail(email)
-    const user = userRecord.toJSON()
-    if (user) {
-        console.log(user)
-        return user
+// Get user's details using uid
+const getUserData = async uid => {
+    try {
+        const user = await admin.auth().getUser(uid)
+        return user.toJSON()
+    } catch (error) {
+        console.log(error)
+        throw error
     }
-    return { uid: null }
 }
 
 module.exports = {
     registerUser,
-    login
+    getUserData
 }
