@@ -1,12 +1,11 @@
-// Initializes sockets in the app
+// Initializes and authenticates sockets in the app
 const socketIO = require('socket.io')
 const socketAuth = require('socketio-auth')
 
-// const logger = require('./utils/logger')
-
-// Import custom socket handlers here
-const loginSocket = require('./sockets/login')
 const userHandler = require('./models/userHandler')
+const logger = require('./utils/logger')
+
+const loginSocket = require('./sockets/login')
 
 // Initialize the socket
 const socketInit = server => {
@@ -14,24 +13,24 @@ const socketInit = server => {
     // Perform authentication
     socketAuth(io, {
         authenticate: async (socket, data, callback) => {
-            console.log('AUTHENTICATING', data)
-            const { uid } = data
+            console.log('***** AUTHENTICATING***** : ', data)
             try {
-                const user = await userHandler.addLoggedInUser(socket.id, uid)
+                const user = await userHandler.addLoggedInUser(socket.id, data.uid)
                 if (user) callback(null, true)
             } catch (error) {
                 callback(error)
             }
         },
         postAuthenticate: (socket, data) => {
-            console.log(`Socket ${socket.id} - ${data.uid} has been connected`)
+            logger.info(`Socket ${socket.id} - ${data.uid} has been connected`)
             // Socket handlers attached here
             loginSocket(socket)
         },
         disconnect: socket => {
-            console.log(socket.id, 'disconnected')
+            userHandler.disconnectUser(socket.id)
+            logger.info(socket.id, 'disconnected')
         },
-        timeout: 5000
+        timeout: 86400000 // wait 1 day for authentication then disconnect if not done
     })
 }
 

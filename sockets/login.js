@@ -1,6 +1,6 @@
-// Socket that sends user info back to client
 const userHandler = require('../models/userHandler')
 
+// Upon authentication send the user info to client
 const loginSocket = socket => {
     const user = userHandler.getUserInfo(socket.id)
     socket.emit('user information', user)

@@ -1,5 +1,7 @@
 const admin = require('firebase-admin')
 
+const logger = require('../utils/logger')
+
 // Your app's private key
 const { FIREBASE_SERVICE_ACCOUNT } = require('../utils/config')
 
@@ -22,7 +24,7 @@ const registerUser = async (email, username, password) => {
         })
         return user
     } catch (error) {
-        console.error(error)
+        logger.error('**** Error in firebaseAuth **** : ', error)
         throw error
     }
 }
@@ -33,7 +35,7 @@ const getUserData = async uid => {
         const user = await admin.auth().getUser(uid)
         return user.toJSON()
     } catch (error) {
-        console.log(error)
+        logger.error('**** Error in firebaseAuth **** : ', error)
         throw error
     }
 }
