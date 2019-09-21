@@ -1,8 +1,8 @@
-POST http://localhost:5000/register
+POST https://e-card-game.herokuapp.com/register
 Content-Type: application/json
 
 {
-    "username": "Damn",
-    "email": "praagun@pragun.com",
+    "username": "Dadasmn",
+    "email": "praagdsaun@pragun.com",
     "password": "pragfds"
 }
