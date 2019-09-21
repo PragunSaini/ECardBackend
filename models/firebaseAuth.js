@@ -28,7 +28,10 @@ const registerUser = async (email, username, password) => {
 const getUserData = async uid => {
     try {
         const user = await admin.auth().getUser(uid)
-        return user.toJSON()
+        const token = await admin.auth().createCustomToken(uid)
+        const tokenedUser = user.toJSON()
+        tokenedUser.token = token
+        return tokenedUser
     } catch (error) {
         logger.error('\nError While retrieving User info : \n', error)
         throw error
