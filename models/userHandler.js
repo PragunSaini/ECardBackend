@@ -16,6 +16,19 @@ const registerUser = async (email, username, password) => {
 const addLoggedInUser = async (socketid, uid) => {
     const user = await firebaseAuth.getUserData(uid)
     user.socketid = socketid
+    user.guest = false
+    connectedUsers.push(user)
+    logger.info('==> Currently connected users  => ', connectedUsers.length)
+    return user
+}
+
+const addGuestUser = (socketid, uid, displayName) => {
+    const user = {
+        uid,
+        guest: true,
+        socketid,
+        displayName
+    }
     connectedUsers.push(user)
     logger.info('==> Currently connected users  => ', connectedUsers.length)
     return user
@@ -35,6 +48,7 @@ const disconnectUser = socketid => {
 module.exports = {
     registerUser,
     addLoggedInUser,
+    addGuestUser,
     getUserInfo,
     disconnectUser
 }

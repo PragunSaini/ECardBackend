@@ -15,10 +15,16 @@ const socketInit = server => {
         authenticate: async (socket, data, callback) => {
             console.log('***** AUTHENTICATING***** : ', data)
             try {
-                const user = await userHandler.addLoggedInUser(socket.id, data.uid)
-                if (user) callback(null, true)
+                if (data.guest) {
+                    const user = userHandler.addGuestUser(socket.id, data.uid, data.displayName)
+                    if (user) callback(null, true)
+                } else {
+                    const user = await userHandler.addLoggedInUser(socket.id, data.uid)
+                    if (user) callback(null, true)
+                }
             } catch (error) {
                 callback(error)
+
             }
         },
         postAuthenticate: (socket, data) => {
@@ -33,5 +39,6 @@ const socketInit = server => {
         timeout: 86400000 // wait 1 day for authentication then disconnect if not done
     })
 }
+
 
 module.exports = { socketInit }
