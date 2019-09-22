@@ -24,7 +24,6 @@ const socketInit = server => {
                 }
             } catch (error) {
                 callback(error)
-
             }
         },
         postAuthenticate: (socket, data) => {
@@ -36,9 +35,8 @@ const socketInit = server => {
             userHandler.disconnectUser(socket.id)
             logger.info(socket.id, 'disconnected')
         },
-        timeout: 86400000 // wait 1 day for authentication then disconnect if not done
+        timeout: 10000 // wait 1 day for authentication then disconnect if not done
     })
 }
-
 
 module.exports = { socketInit }
