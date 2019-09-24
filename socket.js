@@ -13,7 +13,7 @@ const socketInit = server => {
     // Perform authentication
     socketAuth(io, {
         authenticate: async (socket, data, callback) => {
-            console.log('***** AUTHENTICATING***** : ', data)
+            logger.info('***** AUTHENTICATING***** : ', data)
             try {
                 if (data.guest) {
                     const user = userHandler.addGuestUser(socket.id, data.uid, data.displayName)
