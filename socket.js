@@ -6,6 +6,7 @@ const userHandler = require('./models/userHandler')
 const logger = require('./utils/logger')
 
 const loginSocket = require('./sockets/login')
+const globalchatSocket = require('./sockets/globalchat')
 
 // Initialize the socket
 const socketInit = server => {
@@ -30,6 +31,7 @@ const socketInit = server => {
             logger.info(`Socket ${socket.id} - ${data.uid} has been connected`)
             // Socket handlers attached here
             loginSocket(socket)
+            globalchatSocket(socket)
         },
         disconnect: socket => {
             userHandler.disconnectUser(socket.id)

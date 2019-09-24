@@ -45,10 +45,16 @@ const disconnectUser = socketid => {
     logger.info('==> Currently connected users  => ', connectedUsers.length)
 }
 
+// Return the logged user count
+const getUserCount = () => {
+    return connectedUsers.length
+}
+
 module.exports = {
     registerUser,
     addLoggedInUser,
     addGuestUser,
     getUserInfo,
-    disconnectUser
+    disconnectUser,
+    getUserCount
 }
