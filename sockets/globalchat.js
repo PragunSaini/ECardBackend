@@ -10,7 +10,7 @@ const globalchatSocket = socket => {
     socket.on('global chat message', msg => {
         logger.info(msg)
         // send this user's message to all other users
-        socket.broadcast.emit('global broadcast', msg)
+        socket.broadcast.emit('global chat broadcast', msg)
     })
 }
 
