@@ -29,6 +29,7 @@ const socketInit = server => {
         },
         postAuthenticate: (socket, data) => {
             logger.info(`Socket ${socket.id} - ${data.uid} has been connected`)
+            io.emit('connected count', userHandler.getUserCount())
             // Socket handlers attached here
             loginSocket(socket)
             globalchatSocket(socket)
@@ -36,6 +37,7 @@ const socketInit = server => {
         disconnect: socket => {
             userHandler.disconnectUser(socket.id)
             logger.info(socket.id, 'disconnected')
+            io.emit('connected count', userHandler.getUserCount())
         },
         timeout: 10000 // wait 1 day for authentication then disconnect if not done
     })
