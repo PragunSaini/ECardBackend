@@ -14,6 +14,7 @@ const roomIDGenerator = () => {
 const roomSocket = socket => {
     // Create a new room
     socket.on('create game room', () => {
+        console.log('REQUEST RECIEVED')
         const newRoomID = roomIDGenerator()
         // Store the ids of players
         const newRoom = {
@@ -29,17 +30,23 @@ const roomSocket = socket => {
         // eslint-disable-next-line
         socket.roomid = newRoomID
         // Tell the client about success
+        console.log('EMITTING ', newRoom)
         socket.emit('game room created', newRoom)
     })
 
     // Join a existing room
     socket.on('join game room', roomid => {
+        console.log(roomid, 'JOIN ME')
         // Check if that room already full or doesn't exist
         const room = rooms.find(r => r.roomid === roomid)
         if (room === undefined) {
+            console.log('ROOM NOT EXIST')
             socket.emit('no such room')
         } else if (room.player2SocketID !== null) {
+            console.log('ROOM FULL')
             socket.emit('room full')
+        } else if (room.player1SocketID === socket.id) {
+            socket.emit('cannot join own room')
         } else {
             // Room can be joined so join it
             // eslint-disable-next-line
@@ -55,6 +62,8 @@ const roomSocket = socket => {
                 return r
             })
             // notify client
+            console.log('JOIINNG', room)
+            socket.to(`${room.roomid}`).emit('game room joined', room)
             socket.emit('game room joined', room)
         }
     })
