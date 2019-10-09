@@ -1,22 +1,23 @@
 const roomsHandler = require('../models/roomsHandler')
 
-const gameSocket = socket => {
+const gameSocket = (socket, io) => {
     // Game ready to play request by a player
     socket.on('ready to play', roomid => {
-        const room = roomsHandler.getRoom(roomid)
+        const room = { ...roomsHandler.getRoom(roomid) }
         if (socket.user.uid == room.player1UID && !room.player1Ready) {
             room.player1Ready = true
+            roomsHandler.setRoom(room)
         } else if (socket.user.uid == room.player2UID && !room.player2Ready) {
             room.player2Ready = true
+            roomsHandler.setRoom(room)
         }
-
         if (room.player1Ready && room.player2Ready) {
-            roomsHandler.setRoom(startGame(room))
+            roomsHandler.setRoom(startGame(roomid))
         }
     })
 
-    const startGame = origRoom => {
-        const room = { ...origRoom }
+    const startGame = roomid => {
+        const room = { ...roomsHandler.getRoom(roomid) }
         room.state = {
             round1: [],
             round2: [],
@@ -33,7 +34,7 @@ const gameSocket = socket => {
             room.emperor = room.player2UID
             room.slave = room.player1UID
         }
-        socket.nsp.to(room.roomid).emit('game init and start', room)
+        io.to(room.roomid).emit('game init and start', room)
         return room
     }
 }
