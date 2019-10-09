@@ -19,8 +19,10 @@ const roomSocket = socket => {
             roomid: newRoomID,
             player1SocketID: socket.id,
             player1UID: socket.user.uid,
+            player1Ready: false,
             player2SocketID: null,
-            player2UID: null
+            player2UID: null,
+            player2Ready: false
         }
         roomsHandler.addNewRoom(newRoom)
         // Actually join the room
@@ -47,15 +49,16 @@ const roomSocket = socket => {
             socket.emit('cannot join own room')
         } else {
             // Room can be joined so join it
-            // eslint-disable-next-line
-            socket.roomid = room.roomid
-            socket.join(`${room.roomid}`)
-            room.player2SocketID = socket.id
-            room.player2UID = socket.user.uid
+            const modifiedRoom = { ...room }
+            socket.roomid = modifiedRoom.roomid
+            socket.join(`${modifiedRoom.roomid}`)
+            modifiedRoom.player2SocketID = socket.id
+            modifiedRoom.player2UID = socket.user.uid
             // notify client
-            console.log('JOIINNG', room)
-            socket.to(`${room.roomid}`).emit('game room joined', room)
-            socket.emit('game room joined', room)
+            console.log('JOIINNG', modifiedRoom)
+            socket.to(`${modifiedRoom.roomid}`).emit('game room joined', modifiedRoom)
+            socket.emit('game room joined', modifiedRoom)
+            roomsHandler.existsRoom(modifiedRoom)
         }
     })
 }

@@ -8,6 +8,7 @@ const logger = require('./utils/logger')
 const loginSocket = require('./sockets/login')
 const globalchatSocket = require('./sockets/globalchat')
 const roomSocket = require('./sockets/rooms')
+const gameSocket = require('./sockets/game')
 
 // Initialize the socket
 const socketInit = server => {
@@ -35,6 +36,7 @@ const socketInit = server => {
             loginSocket(socket)
             globalchatSocket(socket)
             roomSocket(socket)
+            gameSocket(socket)
         },
         disconnect: socket => {
             userHandler.disconnectUser(socket.id)

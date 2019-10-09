@@ -19,8 +19,13 @@ const getRoom = id => {
     return gamerooms[id]
 }
 
+const setRoom = room => {
+    gamerooms[room.roomid] = room
+}
+
 module.exports = {
     existsRoom,
     addNewRoom,
-    getRoom
+    getRoom,
+    setRoom
 }
