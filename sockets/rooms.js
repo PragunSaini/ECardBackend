@@ -1,11 +1,9 @@
 // Handles room creation for a gaming session
-
-// Store all the rooms
-let rooms = []
+const roomsHandler = require('../models/roomsHandler')
 
 const roomIDGenerator = () => {
     const newRoomID = Math.floor(100000 + Math.random() * 900000)
-    if (rooms.some(room => room.roomid === newRoomID)) {
+    if (roomsHandler.existsRoom(newRoomID)) {
         return roomIDGenerator()
     }
     return newRoomID
@@ -24,7 +22,7 @@ const roomSocket = socket => {
             player2SocketID: null,
             player2UID: null
         }
-        rooms = [...rooms, newRoom]
+        roomsHandler.addNewRoom(newRoom)
         // Actually join the room
         socket.join(`${newRoomID}`)
         // eslint-disable-next-line
@@ -38,7 +36,7 @@ const roomSocket = socket => {
     socket.on('join game room', roomid => {
         console.log(roomid, 'JOIN ME')
         // Check if that room already full or doesn't exist
-        const room = rooms.find(r => r.roomid === roomid)
+        const room = roomsHandler.getRoom(roomid)
         if (room === undefined) {
             console.log('ROOM NOT EXIST')
             socket.emit('no such room')
@@ -54,13 +52,6 @@ const roomSocket = socket => {
             socket.join(`${room.roomid}`)
             room.player2SocketID = socket.id
             room.player2UID = socket.user.uid
-            // Store this altered room
-            rooms = rooms.map(r => {
-                if (r.roomid === room.roomid) {
-                    return room
-                }
-                return r
-            })
             // notify client
             console.log('JOIINNG', room)
             socket.to(`${room.roomid}`).emit('game room joined', room)
