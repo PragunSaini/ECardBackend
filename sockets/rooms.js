@@ -9,7 +9,7 @@ const roomIDGenerator = () => {
     return newRoomID
 }
 
-const roomSocket = socket => {
+const roomSocket = (socket, io) => {
     // Create a new room
     socket.on('create game room', () => {
         const newRoomID = roomIDGenerator()
@@ -54,6 +54,11 @@ const roomSocket = socket => {
             socket.emit('game room joined', modifiedRoom)
             roomsHandler.setRoom(modifiedRoom)
         }
+    })
+
+    // Handle room chats
+    socket.on('room chat message', msg => {
+        io.to(socket.roomid).emit('room chat msg gotten', msg)
     })
 }
 

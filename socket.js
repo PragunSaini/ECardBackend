@@ -35,7 +35,7 @@ const socketInit = server => {
             // Socket handlers attached here
             loginSocket(socket)
             globalchatSocket(socket)
-            roomSocket(socket)
+            roomSocket(socket, io)
             gameSocket(socket, io)
         },
         disconnect: socket => {
