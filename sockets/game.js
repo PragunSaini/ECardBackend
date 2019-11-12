@@ -125,11 +125,12 @@ const gameSocket = (socket, io) => {
         }
 
         const newRoom = roomsHandler.getRoom(roomid)
-        console.log(newRoom)
-        io.to(newRoom.roomid).emit('next turn', newRoom)
+        // console.log(newRoom)
         if (newRoom.stage == 0 && newRoom.round == 4) {
-            newRoom.ameOver = true
-            io.to(newRoom.roomid).emit('game over', newRoom)
+            newRoom.gameOver = true
+            io.to(newRoom.roomid).emit('next turn', newRoom)
+        } else {
+            io.to(newRoom.roomid).emit('next turn', newRoom)
         }
     }
 
