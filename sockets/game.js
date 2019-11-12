@@ -23,8 +23,11 @@ const gameSocket = (socket, io) => {
         room.slave = null
         room.player1Played = null
         room.player2Played = null
+        room.player1Score = 0
+        room.player2Score = 0
         room.round = 0
         room.stage = 0
+        room.gameOver = false
         const toss = Math.floor(Math.random() * 2)
         if (toss == 1) {
             room.emperor = room.player1UID
@@ -68,6 +71,11 @@ const gameSocket = (socket, io) => {
             if (room.player1Cards.length == 1) {
                 room.result = 'Slave wins'
                 room.state[room.round][room.stage] = room.slave
+                if (room.slave == room.player1UID) {
+                    room.player1Score += 5
+                } else {
+                    room.player2Score += 5
+                }
                 roomsHandler.setRoom(room)
                 resetRoom(roomid)
             } else {
@@ -81,6 +89,11 @@ const gameSocket = (socket, io) => {
         ) {
             room.state[room.round][room.stage] = room.emperor
             room.result = 'Emperor wins'
+            if (room.emperor == room.player1UID) {
+                room.player1Score += 1
+            } else {
+                room.player2Score += 1
+            }
             roomsHandler.setRoom(room)
             resetRoom(roomid)
         } else if (
@@ -89,6 +102,11 @@ const gameSocket = (socket, io) => {
         ) {
             room.state[room.round][room.stage] = room.emperor
             room.result = 'Emperor wins'
+            if (room.emperor == room.player1UID) {
+                room.player1Score += 1
+            } else {
+                room.player2Score += 1
+            }
             roomsHandler.setRoom(room)
             resetRoom(roomid)
         } else if (
@@ -97,14 +115,20 @@ const gameSocket = (socket, io) => {
         ) {
             room.state[room.round][room.stage] = room.slave
             room.result = 'Slave wins'
+            if (room.slave == room.player1UID) {
+                room.player1Score += 5
+            } else {
+                room.player2Score += 5
+            }
             roomsHandler.setRoom(room)
             resetRoom(roomid)
         }
+
         const newRoom = roomsHandler.getRoom(roomid)
         console.log(newRoom)
         io.to(newRoom.roomid).emit('next turn', newRoom)
         if (newRoom.stage == 0 && newRoom.round == 4) {
-            newRoom.result += '\nGAME OVER'
+            newRoom.ameOver = true
             io.to(newRoom.roomid).emit('game over', newRoom)
         }
     }
