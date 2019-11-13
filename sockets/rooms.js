@@ -60,6 +60,11 @@ const roomSocket = (socket, io) => {
     socket.on('room chat message', msg => {
         io.to(socket.roomid).emit('room chat msg gotten', msg)
     })
+
+    // handle room deletion
+    socket.on('erase game room', roomid => {
+        roomsHandler.eraseRoom(roomid)
+    })
 }
 
 module.exports = roomSocket

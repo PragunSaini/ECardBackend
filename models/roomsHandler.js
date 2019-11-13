@@ -6,6 +6,9 @@ const existsRoom = id => {
     if (typeof gamerooms[id] == 'undefined') {
         return false
     }
+    if (gamerooms[id] == null) {
+        return false
+    }
     return true
 }
 
@@ -23,9 +26,15 @@ const setRoom = room => {
     gamerooms[room.roomid] = room
 }
 
+const eraseRoom = id => {
+    gamerooms[id] = null
+    console.log(gamerooms)
+}
+
 module.exports = {
     existsRoom,
     addNewRoom,
     getRoom,
-    setRoom
+    setRoom,
+    eraseRoom
 }

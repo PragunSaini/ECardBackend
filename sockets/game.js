@@ -1,4 +1,5 @@
 const roomsHandler = require('../models/roomsHandler')
+const userHandler = require('../models/userHandler')
 
 const gameSocket = (socket, io) => {
     // Game ready to play request by a player
@@ -25,6 +26,7 @@ const gameSocket = (socket, io) => {
         room.player2Played = null
         room.player1Score = 0
         room.player2Score = 0
+        room.lastWon = null
         room.round = 0
         room.stage = 0
         room.gameOver = false
@@ -71,6 +73,7 @@ const gameSocket = (socket, io) => {
             if (room.player1Cards.length == 1) {
                 room.result = 'Slave wins'
                 room.state[room.round][room.stage] = room.slave
+                room.lastWon = room.slave
                 if (room.slave == room.player1UID) {
                     room.player1Score += 5
                 } else {
@@ -88,6 +91,7 @@ const gameSocket = (socket, io) => {
             (room.player1Played.play == 'C' && room.player2Played.play == 'S')
         ) {
             room.state[room.round][room.stage] = room.emperor
+            room.lastWon = room.emperor
             room.result = 'Emperor wins'
             if (room.emperor == room.player1UID) {
                 room.player1Score += 1
@@ -102,6 +106,7 @@ const gameSocket = (socket, io) => {
         ) {
             room.state[room.round][room.stage] = room.emperor
             room.result = 'Emperor wins'
+            room.lastWon = room.emperor
             if (room.emperor == room.player1UID) {
                 room.player1Score += 1
             } else {
@@ -115,6 +120,7 @@ const gameSocket = (socket, io) => {
         ) {
             room.state[room.round][room.stage] = room.slave
             room.result = 'Slave wins'
+            room.lastWon = room.slave
             if (room.slave == room.player1UID) {
                 room.player1Score += 5
             } else {
@@ -138,11 +144,26 @@ const gameSocket = (socket, io) => {
         const room = { ...roomsHandler.getRoom(roomid) }
         if (socket.user.uid == room.player1UID && !room.player1Played) {
             room.player1Played = { play: card }
+            if (!userHandler.getUserInfo(room.player2SocketID)) {
+                room.player2UID = null
+                room.player2SocketID = null
+                room.gameOver = true
+            }
             roomsHandler.setRoom(room)
         }
         if (socket.user.uid == room.player2UID && !room.player2Played) {
             room.player2Played = { play: card }
+            if (!userHandler.getUserInfo(room.player1SocketID)) {
+                room.player1UID = null
+                room.player1SocketID = null
+                room.gameOver = true
+            }
             roomsHandler.setRoom(room)
+        }
+        console.log(room)
+        if (!room.player1SocketID || !room.player2SocketID) {
+            io.to(room.roomid).emit('next turn', room)
+            return
         }
 
         if (room.player1Played && room.player2Played) {
