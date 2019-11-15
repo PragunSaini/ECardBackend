@@ -26,6 +26,8 @@ const gameSocket = (socket, io) => {
         room.player2Played = null
         room.player1Score = 0
         room.player2Score = 0
+        room.player1LastMove = null
+        room.player2LastMove = null
         room.lastWon = null
         room.round = 0
         room.stage = 0
@@ -67,6 +69,8 @@ const gameSocket = (socket, io) => {
 
     const checkResult = roomid => {
         const room = roomsHandler.getRoom(roomid)
+        room.player1LastMove = room.player1Played.play
+        room.player2LastMove = room.player2Played.play
         if (room.player1Played.play == 'C' && room.player2Played.play == 'C') {
             room.player1Cards = [...room.player1Cards].slice(1)
             room.player2Cards = [...room.player2Cards].slice(1)
